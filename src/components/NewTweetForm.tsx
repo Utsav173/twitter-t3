@@ -35,6 +35,8 @@ function Form() {
   const createTweet = api.tweet.create.useMutation({
     onSuccess: (newTweet) => {
       if (session.status !== "authenticated") return;
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       void trpcUtils.tweet.infiniteFeed.invalidate({}, (oldData) => {
         if (oldData == null || oldData.pages[0] == null) return;
         const newCacheTweet = {

@@ -82,13 +82,11 @@ function TweetCard({
   const trpcUtils = api.useContext();
   const toggleLike = api.tweet.toggleLike.useMutation({
     onSuccess: ({ addedLike }) => {
-      const updateData: Parameters<
-        typeof trpcUtils.tweet.infiniteFeed.setInfiniteData
-      >[1] = (oldData) => {
+      const updateData: Parameters<typeof trpcUtils.tweet.infiniteFeed.setInfiniteData>[1] = (oldData) => {
         if (oldData == null) return;
-
+  
         const countModifier = addedLike ? 1 : -1;
-
+  
         return {
           ...oldData,
           pages: oldData.pages.map((page) => {
@@ -99,17 +97,17 @@ function TweetCard({
                   return {
                     ...tweet,
                     likeCount: tweet.likeCount + countModifier,
-                    likedByMe: addedLike,
+                    likedByMe: addedLike || false,
                   };
                 }
-
+  
                 return tweet;
               }),
             };
           }),
         };
       };
-
+  
       trpcUtils.tweet.infiniteFeed.setInfiniteData({}, updateData);
       trpcUtils.tweet.infiniteFeed.setInfiniteData(
         { onlyFollowing: true },
@@ -121,6 +119,7 @@ function TweetCard({
       );
     },
   });
+  
   function handleToggleLike() {
     toggleLike.mutate({
       id,
